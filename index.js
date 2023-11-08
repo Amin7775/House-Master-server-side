@@ -34,8 +34,22 @@ async function run() {
     const database = client.db("HouseMaster")
     const ServiceCollection = database.collection("Services")
     
-
-    
+    //Add Services Related Api - Start
+    //post
+    app.post('/services', async(req,res)=>{
+        const newProduct = req.body;
+        // console.log(newProduct)
+        const result = await ServiceCollection.insertOne(newProduct)
+        res.send(result)
+      })
+      
+    //get
+    app.get('/services', async(req,res)=>{
+        const cursor = ServiceCollection.find()
+        const result = await cursor.toArray()
+        res.send(result)
+      })
+    //Add Services Related Api - End
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
