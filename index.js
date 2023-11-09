@@ -33,6 +33,7 @@ async function run() {
 
     const database = client.db("HouseMaster")
     const ServiceCollection = database.collection("Services")
+    const bookedCollection = database.collection("Booked")
     
     //Add Services Related Api - Start
     //post
@@ -51,13 +52,27 @@ async function run() {
       })
     //Add Services Related Api - End
 
-    //view single product from db
+    //view single service from db
     app.get('/services/:id',async(req,res)=> {
         const id = req.params.id;
         const query = {_id : new ObjectId(id)}
         const result = await ServiceCollection.findOne(query);
         res.send(result)
     })
+
+    //Purchased/Booked related Api - start
+    app.post('/booked', async(req,res)=>{
+      const newBooked = req.body;
+      const result = await bookedCollection.insertOne(newBooked)
+      res.send(result)
+    })
+
+    app.get('/booked', async(req,res)=>{
+      const cursor = bookedCollection.find()
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+      //Purchased/Booked related Api - end
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
