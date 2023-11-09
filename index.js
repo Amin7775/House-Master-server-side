@@ -6,7 +6,10 @@ const { MongoClient, ServerApiVersion, ObjectId} = require('mongodb');
 const port = process.env.PORT || 5000;
 
 //middleware
-app.use(cors());
+app.use(cors({
+  origin:['http://localhost:5173'],
+  
+}));
 app.use(express.json());
 
 app.get('/', (req,res)=>{
@@ -43,10 +46,23 @@ async function run() {
         const result = await ServiceCollection.insertOne(newProduct)
         res.send(result)
       })
+    
       
     //get
     app.get('/services', async(req,res)=>{
         const cursor = ServiceCollection.find()
+        const result = await cursor.toArray()
+        res.send(result)
+      })
+
+    //api to filter
+    app.get('/services/data', async(req,res)=>{
+      console.log(req.query.email)
+      let query={}
+      if(req.query?.email){
+        query={providerEmail : req.query.email}
+      }
+        const cursor = ServiceCollection.find(query)
         const result = await cursor.toArray()
         res.send(result)
       })
@@ -68,11 +84,26 @@ async function run() {
     })
 
     app.get('/booked', async(req,res)=>{
+      console.log(req.query)
       const cursor = bookedCollection.find()
       const result = await cursor.toArray()
       res.send(result)
     })
       //Purchased/Booked related Api - end
+
+    // //get service data by email
+    // app.get('/services', async (req, res) => {
+    //   const providerEmail = req.query.providerEmail;
+    //   const query = { providerEmail: providerEmail };
+    
+    //   try {
+    //     const result = await ServiceCollection.find(query).toArray();
+    //     res.send(result);
+    //   } catch (err) {
+    //     res.status(500).send({ error: err.message });
+    //   }
+    // });
+    
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
