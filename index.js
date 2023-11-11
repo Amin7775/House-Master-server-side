@@ -55,6 +55,13 @@ async function run() {
         res.send(result)
       })
 
+    //dedicated home page api so that it dosent take time loading home page as there is only need of 4 db documents for the homepage 
+    app.get('/services/home', async(req,res)=>{
+      const cursor = ServiceCollection.find().limit(4); 
+      const result = await cursor.toArray();
+      res.send(result);
+      })
+
     //api to filter
     app.get('/services/data', async(req,res)=>{
       console.log(req.query.email)
@@ -76,6 +83,29 @@ async function run() {
         res.send(result)
     })
 
+    //update single service from db
+    app.put('/services/:id',async(req,res)=> {
+      const id = req.params.id;
+      const filter = {_id : new ObjectId(id)}
+      const service = req.body;
+      const options = { upsert: true };
+      const updateService={
+        $set: {
+        providerName:service.providerName,
+            providerEmail:service.providerEmail,
+            providerPhotoURL:service.providerPhotoURL,
+            service:service.service,
+            servicePhotoURL:service.servicePhotoURL,
+            price:service.price,
+            serviceArea:service.serviceArea,
+            short_description:service.short_description
+        }
+      }
+      // console.log(updateService)
+        const result = await ServiceCollection.updateOne(filter,updateService,options);
+        res.send(result)
+    })
+
     //Purchased/Booked related Api - start
     app.post('/booked', async(req,res)=>{
       const newBooked = req.body;
@@ -84,7 +114,7 @@ async function run() {
     })
 
     app.get('/booked', async(req,res)=>{
-      console.log(req.query)
+      // console.log(req.query)
       const cursor = bookedCollection.find()
       const result = await cursor.toArray()
       res.send(result)
