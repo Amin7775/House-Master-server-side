@@ -112,13 +112,16 @@ async function run() {
       const result = await bookedCollection.insertOne(newBooked)
       res.send(result)
     })
+
+  //   
     
-    // app.get('/booked', async(req,res)=>{
-    //   // console.log(req.query)
-    //   const cursor = bookedCollection.find()
-    //   const result = await cursor.toArray()
-    //   res.send(result)
-    // })
+    app.get('/booked/all/:id', async(req,res)=>{
+      // console.log(req.query)
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+        const result = await bookedCollection.findOne(query);
+      res.send(result)
+    })
     app.get('/booked', async(req,res)=>{
       const user = req.query.email;
       // console.log(user)
@@ -131,6 +134,8 @@ async function run() {
       const result = await cursor.toArray()
       res.send(result)
     })
+    
+   
 
     //get booked data based on provider email
     app.get('/booked/provider', async(req,res)=>{
@@ -152,20 +157,35 @@ async function run() {
       const result = await bookedCollection.deleteOne(filter)
       res.send(result)
     })
+
+    app.patch('/booked/update/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+    
+      const updatedFields = {
+        $set: {
+          status: req.body.status,
+        },
+      };
+    
+      
+        const result = await bookedCollection.updateOne(filter, updatedFields);
+        res.send(result)
+      
+      
+    });
+    
+    // app.put('/booked/:id', async(req,res)=>{
+    //   const id = req.params.id;
+    //   const filter = {_id:new ObjectId(id)}
+      
+    //   const result = await bookedCollection.updateOne(filter)
+    //   res.send(result)
+    // })
+
+    
       //Purchased/Booked related Api - end
 
-    // //get service data by email
-    // app.get('/services', async (req, res) => {
-    //   const providerEmail = req.query.providerEmail;
-    //   const query = { providerEmail: providerEmail };
-    
-    //   try {
-    //     const result = await ServiceCollection.find(query).toArray();
-    //     res.send(result);
-    //   } catch (err) {
-    //     res.status(500).send({ error: err.message });
-    //   }
-    // });
     
     //Delete Service
     app.delete('/services/:id', async(req,res)=>{
