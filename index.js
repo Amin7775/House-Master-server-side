@@ -112,11 +112,30 @@ async function run() {
       const result = await bookedCollection.insertOne(newBooked)
       res.send(result)
     })
-
+    
+    // app.get('/booked', async(req,res)=>{
+    //   // console.log(req.query)
+    //   const cursor = bookedCollection.find()
+    //   const result = await cursor.toArray()
+    //   res.send(result)
+    // })
     app.get('/booked', async(req,res)=>{
+      const user = req.query.email;
+      // console.log(user)
+      let query= {};
+      if(req.query?.email){
+        query ={userEmail: user}
+      }
       // console.log(req.query)
-      const cursor = bookedCollection.find()
+      const cursor = bookedCollection.find(query)
       const result = await cursor.toArray()
+      res.send(result)
+    })
+
+    app.delete('/booked/:id', async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id:new ObjectId(id)}
+      const result = await bookedCollection.deleteOne(filter)
       res.send(result)
     })
       //Purchased/Booked related Api - end
