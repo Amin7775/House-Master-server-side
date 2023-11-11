@@ -132,6 +132,20 @@ async function run() {
       res.send(result)
     })
 
+    //get booked data based on provider email
+    app.get('/booked/provider', async(req,res)=>{
+      const provider = req.query.email;
+      // console.log(user)
+      let query= {};
+      if(req.query?.email){
+        query ={providerEmail: provider}
+      }
+      // console.log(req.query)
+      const cursor = bookedCollection.find(query)
+      const result = await cursor.toArray()
+      res.send(result)
+    })
+
     app.delete('/booked/:id', async(req,res)=>{
       const id = req.params.id;
       const filter = {_id:new ObjectId(id)}
