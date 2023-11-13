@@ -9,7 +9,7 @@ const cookieParser = require('cookie-parser');
 
 //middleware
 app.use(cors({
-  origin:['http://localhost:5173'],
+  origin:['http://localhost:5173','https://house-master-eba63.web.app'],
   credentials: true
 }));
 app.use(express.json());
