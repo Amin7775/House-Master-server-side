@@ -4,14 +4,18 @@ const app = express();
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId} = require('mongodb');
 const port = process.env.PORT || 5000;
+const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser');
 
 //middleware
 app.use(cors({
   origin:['http://localhost:5173'],
-  
+  credentials: true
 }));
 app.use(express.json());
+app.use(cookieParser())
 
+//Server Home 
 app.get('/', (req,res)=>{
     res.send("House Master Server Is Running");
 })
@@ -37,6 +41,30 @@ async function run() {
     const database = client.db("HouseMaster")
     const ServiceCollection = database.collection("Services")
     const bookedCollection = database.collection("Booked")
+
+    //Jwt Related Api - Start
+    app.post('/jwt', async(req,res)=>{
+      const user = req.body;
+
+      const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET, {expiresIn:'1h'})
+
+      res
+      .cookie('token', token,{
+        httpOnly: true,
+        secure: false,
+        // sameSite: 'none'
+      })
+      .send({success: true})
+    })
+
+    // app.post('/logout', async(req,res)=>{
+    //   const user = req.body;
+    //   console.log("logging out user", user)
+    //   res
+    //   .clearCookie('token', {maxAge:0})
+    //   .send({success: true})
+    // })
+    //Jwt Related Api - End
     
     //Add Services Related Api - Start
     //post
